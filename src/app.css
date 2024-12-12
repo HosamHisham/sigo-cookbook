@@ -107,3 +107,21 @@ body {
     background-color: #B28C64;
     color: white;
 }
+
+.logout-button {
+    background-color: #B28C64;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-left: 10px;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  .logout-button:hover {
+    background-color: #FFEED7;
+    color: #B28C64;
+  }
+  

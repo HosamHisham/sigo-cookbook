@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
-import './logincss.css'; // Import the CSS file
+import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { UserContext } from './UserContext';
+import './logincss.css';
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
+  const { setUser } = useContext(UserContext);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -19,8 +23,18 @@ function Login() {
     .then(response => response.json())
     .then(data => {
       if (data.message === 'Login successful') {
+        setUser({ username, role: data.role }); // Store user info with role
+        localStorage.setItem('token', data.token); // Store the JWT token
+        console.log("Stored token:", localStorage.getItem('token')); // Verify token storage
         setMessage('Login successful! Redirecting...');
-        // Redirect to a different page if login is successful
+        console.log("User role:", data.role); // Debug log
+        setTimeout(() => {
+          if (data.role === 'admin') {
+            navigate('/admin'); // Redirect to the admin page
+          } else {
+            navigate('/'); // Redirect to the home page for non-admin users
+          }
+        }, 2000); // Delay for user to see the message
       } else {
         setMessage(data.message);
       }
