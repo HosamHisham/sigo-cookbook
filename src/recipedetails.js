@@ -4,18 +4,49 @@ import { useParams } from 'react-router-dom';
 function RecipeDetails() {
   const { id } = useParams();
   const [recipe, setRecipe] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:5000/recipes/${id}`)
-      .then(response => response.json())
-      .then(data => {
-        console.log('Fetched recipe:', data); // Debug log
-        setRecipe(data);
-      })
-      .catch(error => {
-        console.error('Error fetching recipe:', error);
-      });
+    const url = `http://127.0.0.1:5000/recipe/${id}`;
+    const token = localStorage.getItem('token');
+    console.log('Fetching data from URL:', url);
+
+    if (!token) {
+      setError("No authentication token found.");
+      return;
+    }
+
+    fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => {
+      console.log('Response status:', response.status);
+      if (!response.ok) {
+        console.error(`Error status: ${response.status} - ${response.statusText}`);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (!data || Object.keys(data).length === 0) {
+        console.error('Received empty data from backend');
+        throw new Error('Received empty data from backend');
+      }
+      console.log('Fetched recipe:', data);
+      setRecipe(data);
+    })
+    .catch(error => {
+      console.error('Error fetching recipe:', error.message);
+      setError(error.toString());
+    });
   }, [id]);
+
+  if (error) {
+    return <p>Error: {error}</p>;
+  }
 
   if (!recipe) {
     return <p>Loading...</p>;

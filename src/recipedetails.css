@@ -1,0 +1,40 @@
+/* General styling for the RecipeDetails page */
+.recipe-details {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff6e0; /* Light background color */
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.recipe-details h2 {
+  font-size: 28px;
+  color: #B28C64;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.recipe-details p {
+  font-size: 16px;
+  color: #333;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.recipe-details h3 {
+  font-size: 20px;
+  color: #8C6740;
+  margin-top: 30px;
+  margin-bottom: 10px;
+}
+
+.recipe-details img {
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  display: block;
+  margin: 20px auto;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

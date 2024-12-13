@@ -1,14 +1,13 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { UserContext } from './UserContext';
-import './logincss.css';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const { login } = useContext(UserContext);
   const navigate = useNavigate();
-  const { setUser } = useContext(UserContext);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -20,60 +19,49 @@ function Login() {
       },
       body: JSON.stringify({ username, password }),
     })
-    .then(response => response.json())
-    .then(data => {
-      if (data.message === 'Login successful') {
-        setUser({ username, role: data.role }); // Store user info with role
-        localStorage.setItem('token', data.token); // Store the JWT token
-        console.log("Stored token:", localStorage.getItem('token')); // Verify token storage
-        setMessage('Login successful! Redirecting...');
-        console.log("User role:", data.role); // Debug log
-        setTimeout(() => {
-          if (data.role === 'admin') {
-            navigate('/admin'); // Redirect to the admin page
-          } else {
-            navigate('/'); // Redirect to the home page for non-admin users
-          }
-        }, 2000); // Delay for user to see the message
-      } else {
-        setMessage(data.message);
-      }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      setMessage('An error occurred during login.');
-    });
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Login failed');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        login(data.user, data.token);
+        if (data.user.role === 'admin') {
+          navigate('/admin');
+        } else {
+          navigate('/');
+        }
+      })
+      .catch((error) => {
+        console.error('Error during login:', error);
+        setError('Invalid username or password');
+      });
   };
 
   return (
-    <div className="login-container">
+    <div>
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="username">Username</label>
+        <div>
+          <label>Username:</label>
           <input
             type="text"
-            id="username"
-            name="username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            required
           />
         </div>
-        <div className="form-group">
-          <label htmlFor="password">Password</label>
+        <div>
+          <label>Password:</label>
           <input
             type="password"
-            id="password"
-            name="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            required
           />
         </div>
+        {error && <p>{error}</p>}
         <button type="submit">Login</button>
       </form>
-      {message && <p>{message}</p>}
     </div>
   );
 }

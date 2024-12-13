@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const sqlite3 = require('sqlite3').verbose();
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs'); // Ensure bcrypt is required
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
@@ -76,15 +76,21 @@ db.run(createRecipesTableQuery, (err) => {
 });
 
 // Middleware to verify JWT and check admin role
+// Middleware to verify JWT and check admin role
 const verifyAdmin = (req, res, next) => {
-  const token = req.headers['authorization'];
+  const authHeader = req.headers['authorization'];
+  if (!authHeader) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
 
+  const token = authHeader.split(' ')[1]; // Extract the token from the header
   if (!token) {
     return res.status(401).json({ message: 'No token provided' });
   }
 
   jwt.verify(token, secretKey, (err, decoded) => {
     if (err) {
+      console.error('Failed to authenticate token:', err.message);
       return res.status(401).json({ message: 'Failed to authenticate token' });
     }
 
@@ -97,26 +103,52 @@ const verifyAdmin = (req, res, next) => {
   });
 };
 
+// Delete a recipe (admin only)
+app.delete('/recipes/:id', verifyAdmin, (req, res) => {
+  const { id } = req.params;
+  console.log(`Attempting to delete recipe with id: ${id}`); // Log the delete attempt
+  db.run('DELETE FROM recipes WHERE id = ?', [id], function (err) {
+    if (err) {
+      console.error('Error while deleting recipe:', err.message);
+      return res.status(500).json({ message: 'Problem while deleting', error: err.message });
+    }
+    res.status(200).json({ message: 'Recipe deleted successfully' });
+  });
+});
+
+
 // Login API
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
+  console.log('Received login request:', { username, password }); // Log the request
+  db.get('SELECT * FROM users WHERE username = ?', [username], (err, user) => {
+    if (err) {
+      console.error('Error fetching user:', err.message);
+      return res.status(500).json({ message: 'An error occurred during login' });
+    }
+    if (!user) {
+      console.warn('User not found:', username);
+      return res.status(401).json({ message: 'Invalid username or password' });
+    }
 
-  db.get('SELECT * FROM users WHERE username = ?', [username], (err, row) => {
-    if (err || !row) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    if (bcrypt.compareSync(password, row.password)) {
-      const token = jwt.sign({ username: row.username, role: row.role }, secretKey, { expiresIn: '1h' });
-      res.status(200).json({
-        message: 'Login successful',
-        token,
-        role: row.role // Ensure role is included in the response
-      });
-    } else {
-      res.status(400).json({ message: 'Wrong password or username' });
-    }
+    // Compare hashed password
+    bcrypt.compare(password, user.password, (err, isMatch) => {
+      if (err) {
+        console.error('Error comparing passwords:', err.message);
+        return res.status(500).json({ message: 'An error occurred during login' });
+      }
+      if (!isMatch) {
+        console.warn('Invalid password for user:', username);
+        return res.status(401).json({ message: 'Invalid username or password' });
+      }
+
+      // Generate a token (e.g., JWT)
+      const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, secretKey, { expiresIn: '1h' });
+      res.status(200).json({ token, user });
+    });
   });
 });
+
 
 // Signup API
 app.post('/signup', (req, res) => {
@@ -135,20 +167,27 @@ app.post('/signup', (req, res) => {
   });
 });
 
+
 // Get recipes by category
 app.get('/recipes/:category', (req, res) => {
   const { category } = req.params;
+  console.log('Received request for category:', category);  // Debug log
+
   db.all(
     'SELECT * FROM recipes WHERE category = ?',
     [category],
     (err, rows) => {
       if (err) {
+        console.error('Error fetching recipes:', err.message);  // Log errors
         return res.status(500).json({ message: 'Unable to find recipe' });
       }
+
+      console.log('Fetched recipes:', rows);  // Log the recipes found
       res.status(200).json(rows);
     }
   );
 });
+
 
 // Configure Multer for file uploads
 const storage = multer.diskStorage({
@@ -182,49 +221,51 @@ app.post('/recipes', verifyAdmin, upload.single('image'), (req, res) => {
   );
 });
 
-// Get recipe by ID
-app.get('/recipes/:id', (req, res) => {
-    const { id } = req.params;
-    db.get(
-      'SELECT * FROM recipes WHERE id = ?',
-      [id],
-      (err, row) => {
-        if (err) {
-          return res.status(500).json({ message: 'Unable to find recipe' });
-        }
-        if (!row) {
-          return res.status(404).json({ message: 'Recipe not found' });
-        }
-        res.status(200).json(row);
-      }
-    );
+// Fetch a recipe by ID
+app.get('/recipe/:id', (req, res) => {
+  const recipeId = req.params.id;
+
+  console.log('Fetching recipe with ID:', recipeId);
+
+  db.get('SELECT * FROM recipes WHERE id = ?', [recipeId], (err, row) => {
+    if (err) {
+      console.error('Database query failed:', err);
+      return res.status(500).json({ error: 'Error fetching recipe from database' });
+    }
+
+    if (!row) {
+      return res.status(404).json({ message: 'Recipe not found' });
+    }
+
+    res.json(row); // Send the found recipe as the response
   });
-  
+});
+
+
 
 // Update a recipe (admin only)
-app.put('/recipes/:id', verifyAdmin, (req, res) => {
+app.put('/recipes/:id', verifyAdmin, upload.single('image'), (req, res) => {
   const { id } = req.params;
-  const { title, description, ingredients, instructions, category, image } = req.body;
+  const { title, description, ingredients, instructions, category } = req.body;
+  const image = req.file ? req.file.path.replace(/\\/g, '/') : null;
 
   db.run(
     'UPDATE recipes SET title = ?, description = ?, ingredients = ?, instructions = ?, category = ?, image = ? WHERE id = ?',
     [title, description, ingredients, instructions, category, image, id],
     function (err) {
       if (err) {
-        return res.status(500).json({ message: 'Error updating recipe' });
+        console.error('Error while updating recipe:', err.message); // Detailed error log
+        return res.status(500).json({ message: 'Error updating recipe', error: err.message });
       }
       res.status(200).json({ message: 'Update successful' });
     }
   );
 });
 
-// Delete a recipe (admin only)
-app.delete('/recipes/:id', verifyAdmin, (req, res) => {
-  const { id } = req.params;
-  db.run('DELETE FROM recipes WHERE id = ?', [id], function (err) {
-    if (err) {
-      return res.status(500).json({ message: 'Problem while deleting' });
-    }
-    res.status(200).json({ message: 'Recipe deleted successfully' });
-  });
-});
+// Serve static files from the current directory and uploads directory
+app.use(express.static(__dirname));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+
+
+

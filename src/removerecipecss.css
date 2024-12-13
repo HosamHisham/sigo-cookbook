@@ -1,0 +1,75 @@
+/* General styling for the RemoveRecipe page */
+.remove-recipe-container {
+  text-align: center;
+  padding: 20px;
+  background-color: #fff6e0; /* Light background color */
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.remove-recipe-header {
+  font-size: 24px;
+  color: #B28C64;
+  margin-bottom: 20px;
+}
+
+.button-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* Center align the buttons horizontally */
+  gap: 30px; /* Significantly increase space between buttons */
+}
+
+.category-button {
+  background-color: #B28C64;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s, transform 0.3s;
+  margin: 15px; /* Increase margin to ensure buttons are spaced out */
+}
+
+.category-button:hover {
+  background-color: #8C6740;
+  transform: scale(1.05);
+}
+
+.message {
+  color: #FF6F61;
+  margin-top: 20px;
+}
+
+.recipe-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.recipe-list li {
+  background-color: #f8f8f8;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.delete-button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.delete-button:hover {
+  background-color: #d32f2f;
+  transform: scale(1.05);
+}

@@ -1,16 +1,32 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { UserContext } from './UserContext';
-import './addrecipe.css'; // Import the CSS file
+import './updaterecipecss.css'; // Import the CSS file
 
-function AddRecipe() {
+function UpdateRecipe() {
+  const { id } = useParams();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [ingredients, setIngredients] = useState('');
   const [instructions, setInstructions] = useState('');
-  const [category, setCategory] = useState('appetizer');
+  const [category, setCategory] = useState('');
   const [image, setImage] = useState(null);
   const [message, setMessage] = useState('');
   const { user } = useContext(UserContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetch(`http://127.0.0.1:5000/recipes/${id}`)
+      .then(response => response.json())
+      .then(data => {
+        setTitle(data.title);
+        setDescription(data.description);
+        setIngredients(data.ingredients);
+        setInstructions(data.instructions);
+        setCategory(data.category);
+      })
+      .catch(error => console.error('Error fetching recipe:', error));
+  }, [id]);
 
   const handleImageChange = (e) => {
     setImage(e.target.files[0]);
@@ -20,7 +36,7 @@ function AddRecipe() {
     e.preventDefault();
 
     if (!user || user.role !== 'admin') {
-      setMessage('You do not have permission to add recipes.');
+      setMessage('You do not have permission to update recipes.');
       return;
     }
 
@@ -30,43 +46,37 @@ function AddRecipe() {
     formData.append('ingredients', ingredients);
     formData.append('instructions', instructions);
     formData.append('category', category);
-    formData.append('image', image);
+    if (image) {
+      formData.append('image', image);
+    }
 
     const token = localStorage.getItem('token'); // Get the JWT token from local storage
-    console.log("Using token:", token); // Verify token usage
-    console.log("Form data:", { title, description, ingredients, instructions, category, image }); // Verify data sent
 
-    fetch('http://127.0.0.1:5000/recipes', {
-      method: 'POST',
+    fetch(`http://127.0.0.1:5000/recipes/${id}`, {
+      method: 'PUT',
       headers: {
-        'Authorization': `Bearer ${token}`, // Correctly format the token
+        'Authorization': `Bearer ${token}`,
       },
       body: formData,
     })
-    .then(response => response.json())
-    .then(data => {
-      if (data.message === 'Recipe added successfully') {
-        setMessage('Recipe added successfully!');
-        // Clear the form
-        setTitle('');
-        setDescription('');
-        setIngredients('');
-        setInstructions('');
-        setCategory('appetizer');
-        setImage(null);
-      } else {
-        setMessage(data.message);
-      }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      setMessage('An error occurred while adding the recipe.');
-    });
+      .then(response => response.json())
+      .then(data => {
+        if (data.message === 'Update successful') {
+          setMessage('Recipe updated successfully!');
+          navigate('/admin'); // Redirect to admin page
+        } else {
+          setMessage(data.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error updating recipe:', error);
+        setMessage('An error occurred while updating the recipe.');
+      });
   };
 
   return (
-    <div className="add-recipe">
-      <h2>Add Recipe</h2>
+    <div className="update-recipe">
+      <h2>Update Recipe</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="title">Title</label>
@@ -134,11 +144,11 @@ function AddRecipe() {
             onChange={handleImageChange}
           />
         </div>
-        <button type="submit">Add Recipe</button>
+        <button type="submit">Update Recipe</button>
       </form>
       {message && <p>{message}</p>}
     </div>
   );
 }
 
-export default AddRecipe;
+export default UpdateRecipe;

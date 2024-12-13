@@ -27,8 +27,7 @@ function AdminPage() {
     <div className="admin-page">
       <h2>Admin Dashboard</h2>
       <button onClick={handleAdd} className="admin-button">Add Recipe</button>
-      <button onClick={handleUpdate} className="admin-button">Update Recipe</button>
-      <button onClick={handleRemove} className="admin-button">Remove Recipe</button>
+      <button onClick={handleRemove} className="admin-button">Edit Recipe</button>
     </div>
   );
 }

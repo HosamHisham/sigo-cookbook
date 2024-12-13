@@ -3,85 +3,95 @@ body {
     background-color: rgb(255, 238, 214);
     margin: 0;
     padding: 0;
-}
-
-.header {
+  }
+  
+  .header {
     background-color: #B28C64;
     color: white;
     padding: 10px;
     text-align: center;
     position: relative;
-}
-
-.header .login-signup {
+  }
+  
+  .header h1 a {
+    color: white; /* Title color */
+    text-decoration: none; /* Remove underline */
+  }
+  
+  .header .login-signup {
     float: right;
     margin-top: -30px;
-}
-
-.header .login-signup a {
+  }
+  
+  .header .login-signup a {
     color: white;
     margin: 0 10px;
     text-decoration: none;
     font-weight: bold;
     transition: color 0.3s;
-}
-
-.header .login-signup a:hover {
+  }
+  
+  .header .login-signup a:hover {
     color: #FFEED7;
-}
-
-.header .search-bar {
+  }
+  
+  .header .search-bar {
     margin-top: 10px;
-}
-
-.header .search-bar input {
+  }
+  
+  .header .search-bar input {
     padding: 5px;
     border-radius: 5px;
     border: none;
     width: 200px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-.welcome-message {
+  }
+  
+  .welcome-message {
     text-align: center;
     padding: 20px;
     font-size: 1.2em;
     line-height: 1.6;
     color: #333;
-}
-
-.sections {
+  }
+  
+  .sections {
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
     padding: 20px;
-}
-
-.section {
+  }
+  
+  .section {
     text-align: center;
     margin: 10px;
     width: 220px;
-}
-
-.section img {
+  }
+  
+  .section img {
     width: 200px;
     height: 150px;
     border-radius: 10px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
     transition: transform 0.3s;
-}
-
-.section img:hover {
+  }
+  
+  .section img:hover {
     transform: scale(1.05);
-}
-
-.section h3 {
+  }
+  
+  .section h3 {
     margin-top: 10px;
     font-size: 1.1em;
     color: #B28C64;
-}
-
-.footer {
+  }
+  
+  .section a {
+    color: inherit; /* Maintain link color */
+    text-decoration: none; /* Remove underline */
+  }
+  
+  .footer {
     background-color: #B28C64;
     color: white;
     text-align: center;
@@ -90,9 +100,9 @@ body {
     width: 100%;
     bottom: 0;
     box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.2);
-}
-
-.footer button {
+  }
+  
+  .footer button {
     background-color: white;
     color: #B28C64;
     border: none;
@@ -101,14 +111,14 @@ body {
     cursor: pointer;
     font-weight: bold;
     transition: background-color 0.3s, color 0.3s;
-}
-
-.footer button:hover {
+  }
+  
+  .footer button:hover {
     background-color: #B28C64;
     color: white;
-}
-
-.logout-button {
+  }
+  
+  .logout-button {
     background-color: #B28C64;
     color: white;
     border: none;
