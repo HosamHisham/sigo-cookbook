@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { UserContext } from './UserContext';
-import './updaterecipecss.css'; // Import the CSS file
+import './updaterecipecss.css';
 
 function UpdateRecipe() {
   const { id } = useParams();
@@ -16,16 +16,24 @@ function UpdateRecipe() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:5000/recipes/${id}`)
-      .then(response => response.json())
-      .then(data => {
+    const fetchRecipe = async () => {
+      try {
+        const response = await fetch(`http://127.0.0.1:5000/recipe/${id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch recipe');
+        }
+        const data = await response.json();
         setTitle(data.title);
         setDescription(data.description);
         setIngredients(data.ingredients);
         setInstructions(data.instructions);
         setCategory(data.category);
-      })
-      .catch(error => console.error('Error fetching recipe:', error));
+      } catch (error) {
+        console.error('Error fetching recipe:', error);
+      }
+    };
+
+    fetchRecipe();
   }, [id]);
 
   const handleImageChange = (e) => {
@@ -50,9 +58,9 @@ function UpdateRecipe() {
       formData.append('image', image);
     }
 
-    const token = localStorage.getItem('token'); // Get the JWT token from local storage
+    const token = localStorage.getItem('token');
 
-    fetch(`http://127.0.0.1:5000/recipes/${id}`, {
+    fetch(`http://127.0.0.1:5000/recipe/${id}`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -63,7 +71,7 @@ function UpdateRecipe() {
       .then(data => {
         if (data.message === 'Update successful') {
           setMessage('Recipe updated successfully!');
-          navigate('/admin'); // Redirect to admin page
+          navigate('/admin');
         } else {
           setMessage(data.message);
         }

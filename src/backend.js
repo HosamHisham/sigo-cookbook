@@ -243,24 +243,77 @@ app.get('/recipe/:id', (req, res) => {
 
 
 
-// Update a recipe (admin only)
-app.put('/recipes/:id', verifyAdmin, upload.single('image'), (req, res) => {
+app.put('/recipe/:id', verifyAdmin, upload.single('image'), (req, res) => {
   const { id } = req.params;
   const { title, description, ingredients, instructions, category } = req.body;
   const image = req.file ? req.file.path.replace(/\\/g, '/') : null;
 
   db.run(
-    'UPDATE recipes SET title = ?, description = ?, ingredients = ?, instructions = ?, category = ?, image = ? WHERE id = ?',
+    `UPDATE recipes SET title = ?, description = ?, ingredients = ?, instructions = ?, category = ?, image = ? WHERE id = ?`,
     [title, description, ingredients, instructions, category, image, id],
     function (err) {
       if (err) {
-        console.error('Error while updating recipe:', err.message); // Detailed error log
+        console.error('Error while updating recipe:', err.message);
         return res.status(500).json({ message: 'Error updating recipe', error: err.message });
       }
       res.status(200).json({ message: 'Update successful' });
     }
   );
 });
+
+
+// Search recipes by title or description
+app.get('/search', (req, res) => {
+  const { query } = req.query;
+  db.all(
+    'SELECT * FROM recipes WHERE title LIKE ? OR description LIKE ?',
+    [`%${query}%`, `%${query}%`],
+    (err, rows) => {
+      if (err) {
+        console.error('Error searching recipes:', err.message);
+        return res.status(500).json({ message: 'Error searching recipes' });
+      }
+      res.json(rows);
+    }
+  );
+});
+
+// Create a feedback table if not exists
+const createFeedbackTableQuery = `
+  CREATE TABLE IF NOT EXISTS feedback (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    userId INTEGER NOT NULL,
+    feedback TEXT NOT NULL,
+    FOREIGN KEY (userId) REFERENCES users(id)
+  );
+`;
+
+db.run(createFeedbackTableQuery, (err) => {
+  if (err) {
+    console.error("Error creating feedback table:", err.message);  
+  } else {
+    console.log("Feedback table created successfully");
+  }
+});
+
+// Endpoint to submit feedback
+app.post('/feedback', (req, res) => {
+  const { userId, feedback } = req.body;
+
+  db.run(
+    'INSERT INTO feedback (userId, feedback) VALUES (?, ?)',
+    [userId, feedback],
+    function (err) {
+      if (err) {
+        console.error("Error while submitting feedback:", err.message);
+        return res.status(500).json({ message: 'Problem while submitting feedback', error: err.message });
+      }
+      res.status(201).json({ message: 'Feedback submitted successfully' });
+    }
+  );
+});
+
+      
 
 // Serve static files from the current directory and uploads directory
 app.use(express.static(__dirname));

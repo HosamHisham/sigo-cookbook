@@ -1,0 +1,57 @@
+/* General styling for the feedback form */
+.feedback-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff6e0; /* Light background color */
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.feedback-container h2 {
+  font-size: 28px;
+  color: #B28C64;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.feedback-container .form-group {
+  margin-bottom: 20px;
+}
+
+.feedback-container label {
+  font-size: 16px;
+  color: #333;
+}
+
+.feedback-container textarea {
+  width: 100%;
+  height: 150px;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: none;
+}
+
+.feedback-container button {
+  display: inline-block;
+  background-color: #B28C64;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.feedback-container button:hover {
+  background-color: #8C6740;
+}
+
+.feedback-container p {
+  font-size: 16px;
+  color: #333;
+  text-align: center;
+}
