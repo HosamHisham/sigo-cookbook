@@ -1,14 +1,14 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const sqlite3 = require('sqlite3').verbose();
-const bcrypt = require('bcryptjs'); // Ensure bcrypt is required
+const bcrypt = require('bcryptjs'); 
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const path = require('path');
 
 const app = express();
-const secretKey = 'secret'; // You should store this securely
+const secretKey = 'secret'; 
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -75,7 +75,7 @@ db.run(createRecipesTableQuery, (err) => {
   }
 });
 
-// Middleware to verify JWT and check admin role
+
 // Middleware to verify JWT and check admin role
 const verifyAdmin = (req, res, next) => {
   const authHeader = req.headers['authorization'];
@@ -161,7 +161,7 @@ app.post('/signup', (req, res) => {
   db.run(sql, [username, hash, userRole], function (err) {
     if (err) {
       console.error("Error signing up:", err.message);  
-      return res.status(500).json({ message: 'Error in signing up', error: err.message }); // Include error message
+      return res.status(500).json({ message: 'Error in signing up', error: err.message });
     }
     res.status(201).json({ message: 'User created successfully' });
   });

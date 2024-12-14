@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import './maincoursecss.css'; // We can use the same CSS file for styling
+import './maincoursecss.css'; 
 
 function Appetizer() {
   const [recipes, setRecipes] = useState([]);

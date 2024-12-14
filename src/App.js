@@ -15,7 +15,7 @@ import RemoveRecipe from './removerecipe';
 import RecipeList from './RecipeList';
 import RecipeDetails from './recipedetails';
 import UpdateRecipe from './updaterecipe';
-import Feedback from './feedback'; // Import Feedback component
+import Feedback from './feedback'; 
 
 function App() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -87,9 +87,9 @@ function App() {
             <Route path="/remove-recipe/:category" element={<RecipeList />} />
             <Route path="/recipe/:id" element={<RecipeDetails />} />
             <Route path="/update-recipe/:id" element={<UpdateRecipe />} />
-            <Route path="/feedback" element={<Feedback />} /> {/* Add Feedback route */}
+            <Route path="/feedback" element={<Feedback />} /> 
 
-            {/* Main Page with search functionality */}
+           
             <Route
               path="/"
               element={
@@ -98,7 +98,7 @@ function App() {
                     <p>Welcome to Sigo's Cookbook, where luxury meets home cooking</p>
                   </div>
 
-                  {/* Display search results */}
+                  
                   {searchQuery && searchResults.length > 0 ? (
                     <div className="search-results">
                       {searchResults.map((recipe) => (
@@ -145,7 +145,7 @@ function App() {
                   )}
 
                   <div className="footer">
-                    <Link to="/feedback"><button>Enter Feedback</button></Link> {/* Feedback button */}
+                    <Link to="/feedback"><button>Enter Feedback</button></Link> 
                   </div>
                 </div>
               }

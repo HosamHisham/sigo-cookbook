@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import './maincoursecss.css'; // Import the CSS file
+import './maincoursecss.css'; 
 
 function MainCourse() {
   const [recipes, setRecipes] = useState([]);

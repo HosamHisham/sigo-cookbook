@@ -2,7 +2,7 @@
 .update-recipe-container {
   text-align: center;
   padding: 20px;
-  background-color: #fff6e0; /* Light background color */
+  background-color: #fff6e0; 
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }

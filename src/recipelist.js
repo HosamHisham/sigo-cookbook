@@ -75,7 +75,7 @@ function RecipeList() {
     <div className="recipe-list">
       <h3>{category} Recipes</h3>
 
-      {/* Search bar with button */}
+      
       <div className="search-bar">
         <input
           type="text"
